@@ -22,3 +22,4 @@ jobs:
           destination_repo: https://${{ secrets.GITEA_TOKEN }}@gitea.com/MiKueYu/SPT-LiveFleaPriceDB.git
           destination_branch: main  #  根据您的 Gitea 仓库主分支名称修改
           sync_direction: forward
+          
