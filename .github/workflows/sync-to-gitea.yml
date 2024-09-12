@@ -1,7 +1,7 @@
 name: Sync to Gitea
 
 on:
-  workflow_dispatch:  # 使用 workflow_dispatch 事件触发
+  workflow_dispatch:
 
 jobs:
   sync:
@@ -16,5 +16,5 @@ jobs:
           source_repo: ${{ github.repository }}
           source_branch: ${{ github.ref }}
           destination_repo: https://${{ secrets.GITEA_TOKEN }}@gitea.com/MiKueYu/SPT-LiveFleaPriceDB.git
-          destination_branch: main  #  根据您的 Gitea 仓库主分支名称修改
+          destination_branch: main
           sync_direction: forward
