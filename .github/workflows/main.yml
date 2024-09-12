@@ -35,6 +35,9 @@ jobs:
           ssh-keyscan gitea.com >> ~/.ssh/known_hosts
           git remote add gitea git@gitea.com:MiKueYu/SPT-LiveFleaPriceDB.git
 
+      - name: Pull latest changes
+        run: git pull origin main
+
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v9
         with:
