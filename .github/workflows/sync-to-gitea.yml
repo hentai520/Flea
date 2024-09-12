@@ -1,11 +1,10 @@
 name: Sync to Gitea
 
 on:
-  push:
-    branches:
-      - main  #  根据您的主分支名称修改
-  schedule:
-    - cron: '0 */6 * * *'  #  每 6 小时同步一次，可根据需要修改
+    workflow_run:
+      workflows: ["LiveFleaPrice Fetcher"]
+      types:
+        - completed
 
 jobs:
   sync:
