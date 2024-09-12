@@ -1,7 +1,15 @@
 name: Sync to Gitea
 
 on:
+<<<<<<< HEAD
   workflow_dispatch:
+=======
+  push:
+    branches:
+      - main  #  根据您的主分支名称修改
+  schedule:
+    - cron: '0 */6 * * *'  #  每 6 小时同步一次，可根据需要修改
+>>>>>>> parent of 6996622 (更改同步时间)
 
 jobs:
   sync:
