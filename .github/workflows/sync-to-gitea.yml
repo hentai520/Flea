@@ -16,5 +16,11 @@ jobs:
           source_repo: ${{ github.repository }}
           source_branch: ${{ github.ref }}
           destination_repo: https://${{ secrets.GITEA_TOKEN }}@gitea.com/MiKueYu/SPT-LiveFleaPriceDB.git
+<<<<<<< HEAD
           destination_branch: main
           sync_direction: forward
+=======
+          destination_branch: main  #  根据您的 Gitea 仓库主分支名称修改
+          sync_direction: forward
+          
+>>>>>>> parent of a83e23a (ok)
