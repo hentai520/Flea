@@ -35,10 +35,13 @@ jobs:
           message: 'Update prices'
           
       - name: Trigger Sync to Gitea workflow
-        run: |
-          curl -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"event_type": "sync-to-gitea"}' \
-            https://api.github.com/repos/MiKueYu/SPT-LiveFleaPriceDB/dispatches
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }} 
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'Sync to Gitea',
+              ref: 'main'
+            });

@@ -1,8 +1,7 @@
 name: Sync to Gitea
 
 on:
-    repository_dispatch:
-      types: [sync-to-gitea]
+  workflow_dispatch:  # 使用 workflow_dispatch 事件触发
 
 jobs:
   sync:
