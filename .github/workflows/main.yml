@@ -33,10 +33,3 @@ jobs:
             - prices-regular.json
             - prices-pve.json
           message: 'Update prices'
-          branch: main
-          
-      - name: Trigger Gitea Sync
-        uses: actions/workflow-dispatch@v2
-        with:
-          workflow: sync-to-gitea
-          ref: main
