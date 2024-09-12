@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
   schedule:
-    - cron: '0 */5 * * *' # Runs every hour
+    - cron: '0 */6 * * *' # Runs every hour
 
 jobs:
   fetch_data:
@@ -16,11 +16,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
@@ -28,15 +23,6 @@ jobs:
 
       - run: npm ci
       - run: npm run fetch
-
-      - name: Add Gitea remote
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan gitea.com >> ~/.ssh/known_hosts
-          git remote add gitea git@gitea.com:MiKueYu/SPT-LiveFleaPriceDB.git
-
-      - name: Pull latest changes
-        run: git pull origin main
 
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v9
@@ -47,10 +33,4 @@ jobs:
             - prices-regular.json
             - prices-pve.json
           message: 'Update prices'
-<<<<<<< HEAD
-
-      - name: Push changes to Gitea
-        run: git push gitea main
-=======
           
->>>>>>> parent of 6996622 (更改同步时间)
