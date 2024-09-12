@@ -1,0 +1,24 @@
+name: Sync to Gitea
+
+on:
+  push:
+    branches:
+      - main  #  根据您的主分支名称修改
+  schedule:
+    - cron: '0 */6 * * *'  #  每 6 小时同步一次，可根据需要修改
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Sync to Gitea
+        uses: wei/git-sync@v3
+        with:
+          source_repo: ${{ github.repository }}
+          source_branch: ${{ github.ref }}
+          destination_repo: https://${{ secrets.GITEA_TOKEN }}@gitea.com/MiKueYu/SPT-LiveFleaPriceDB.git
+          destination_branch: main  #  根据您的 Gitea 仓库主分支名称修改
+          sync_direction: forward
