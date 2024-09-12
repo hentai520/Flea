@@ -47,6 +47,10 @@ jobs:
             - prices-regular.json
             - prices-pve.json
           message: 'Update prices'
+<<<<<<< HEAD
 
       - name: Push changes to Gitea
         run: git push gitea main
+=======
+          
+>>>>>>> parent of 6996622 (更改同步时间)
