@@ -24,6 +24,9 @@ jobs:
       - run: npm ci
       - run: npm run fetch
 
+      - name: Add Gitea remote
+        run: git remote add gitea https://gitea.com/MiKueYu/SPT-LiveFleaPriceDB.git
+
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v9
         with:
@@ -33,3 +36,6 @@ jobs:
             - prices-regular.json
             - prices-pve.json
           message: 'Update prices'
+
+      - name: Push changes to Gitea
+        run: git push gitea master
