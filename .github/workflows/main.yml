@@ -38,4 +38,4 @@ jobs:
           message: 'Update prices'
 
       - name: Push changes to Gitea
-        run: git push gitea master
+        run: git push gitea main
