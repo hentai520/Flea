@@ -20,14 +20,15 @@ jobs:
           cp ./prices-pve.json ./sync-files/
           cp ./prices-regular.json ./sync-files/
 
-      - name: Push to Gitee
+      - name: Push to Gitee (master branch)
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
         run: |
           cd sync-files
           git init
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git remote add gitee https://${{ secrets.GITEE_TOKEN }}@gitee.com/skwn123456/spt-live-flea-price-db.git
-
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git remote add gitee https://$GITEE_TOKEN@gitee.com/skwn123456/spt-live-flea-price-db.git
           git add .
           git commit -m "Sync prices-pve.json and prices-regular.json"
           git branch -M master
