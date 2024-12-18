@@ -8,31 +8,29 @@ import { gql, GraphQLClient } from 'graphql-request'
  */
 const DEBUG = false;
 
-const main = (async () => {
+const main = (async() => {
     // Fetch data
-    if (!DEBUG)
-    {
+    if (!DEBUG) {
         const endpoint = "https://api.tarkov.dev/graphql";
         const graphQLClient = new GraphQLClient(endpoint, {
             errorPolicy: "ignore"
         });
-        
+
         // Fetch data from tarkov.dev
         await fetchTarkovDevData(graphQLClient, 'regular');
         await fetchTarkovDevData(graphQLClient, 'pve');
 
-        // Fetch the latest prices.json and handbook.json from SPT-AKI's git repo
-        await downloadFile('https://dev.sp-tarkov.com/SPT-AKI/Server/raw/branch/master/project/assets/database/templates/handbook.json', 'akihandbook.json');
-        await downloadFile('https://dev.sp-tarkov.com/SPT-AKI/Server/raw/branch/master/project/assets/database/templates/items.json', 'akiitems.json');
-        await downloadFile('https://dev.sp-tarkov.com/SPT-AKI/Server/raw/branch/master/project/assets/database/templates/prices.json', 'akiprices.json');
+        // Fetch the latest prices.json and handbook.json from SPT's git repo
+        await downloadFile('https://raw.githubusercontent.com/sp-tarkov/server/refs/heads/master/project/assets/database/templates/handbook.json', 'spthandbook.json');
+        await downloadFile('https://raw.githubusercontent.com/sp-tarkov/server/refs/heads/master/project/assets/database/templates/prices.json', 'sptprices.json');
     }
 
     processData('regular');
     processData('pve');
 });
 
-const fetchTarkovDevData = (async (graphQLClient, gameMode) => {
-    const query = gql`
+const fetchTarkovDevData = (async(graphQLClient, gameMode) => {
+    const query = gql `
     {
         items(lang: en, gameMode: ${gameMode}) {
             id
@@ -49,47 +47,42 @@ const fetchTarkovDevData = (async (graphQLClient, gameMode) => {
 const processData = ((gameMode) => {
     // Read in data
     const tarkovDevPrices = JSON.parse(fs.readFileSync(`tarkovdevprices-${gameMode}.json`, 'utf-8'));
-    const akiHandbook = JSON.parse(fs.readFileSync('akihandbook.json', 'utf-8'));
-    const akiItems = JSON.parse(fs.readFileSync('akiitems.json', 'utf-8'));
-    const akiPrices = JSON.parse(fs.readFileSync('akiprices.json', 'utf-8'));
+    const sptHandbook = JSON.parse(fs.readFileSync('spthandbook.json', 'utf-8'));
+    const sptItems = JSON.parse(fs.readFileSync('items.json', 'utf-8'));
+    const sptPrices = JSON.parse(fs.readFileSync('sptprices.json', 'utf-8'));
 
     // Start with a base of the SPT price list
-    const priceList = structuredClone(akiPrices);
+    const priceList = structuredClone(sptPrices);
 
     // Filter tarkov.dev prices in the same way SPT does
     const filteredTarkovDevPrices = processTarkovDevPrices(gameMode, tarkovDevPrices);
 
     // Get a price for each item in the items list
-    for (const itemId in filteredTarkovDevPrices)
-    {
+    for (const itemId in filteredTarkovDevPrices) {
         // Skip items that aren't in SPTs item database, this tends to be presets
-        if (!akiItems[itemId])
-        {
+        if (!sptItems[itemId]) {
             continue;
         }
 
         const itemPrice = filteredTarkovDevPrices[itemId];
-        if (itemPrice.Average24hPrice)
-        {
+        if (itemPrice.Average24hPrice) {
             if (DEBUG) console.log(`[${gameMode}] Adding item: ${itemPrice.TemplateId} ${itemPrice.Name} -> ${itemPrice.Average24hPrice}`);
             priceList[itemId] = itemPrice.Average24hPrice;
         }
     }
 
     // Ammo packs are easy to exploit, they're never listed on flea which causes server to use handbook price, often contain ammo worth x100 the cost of handbook price
-    const ammoPacks = Object.values(akiItems)
-    .filter(x => (x._parent === "5661632d4bdc2d903d8b456b" || x._parent === "543be5cb4bdc2deb348b4568")
-        && (x._name.includes("item_ammo_box_") || x._name.includes("ammo_box_"))
-        && !x._name.includes("_damaged"));
+    const ammoPacks = Object.values(sptItems)
+        .filter(x => (x._parent === "5661632d4bdc2d903d8b456b" || x._parent === "543be5cb4bdc2deb348b4568") &&
+            (x._name.includes("item_ammo_box_") || x._name.includes("ammo_box_")) &&
+            !x._name.includes("_damaged"));
 
-    for (const ammoPack of ammoPacks)
-    {
-        if (!priceList[ammoPack._id])
-        {
+    for (const ammoPack of ammoPacks) {
+        if (!priceList[ammoPack._id]) {
             if (DEBUG) console.info(`[${gameMode}] edge case ammo pack ${ammoPack._id} ${ammoPack._name} not found in prices, adding manually`);
             // get price of item to multiply price of
             const itemMultipler = ammoPack._props.StackSlots[0]._max_count;
-            const singleItemPrice = getItemPrice(priceList, akiHandbook.Items, ammoPack._props.StackSlots[0]._props.filters[0].Filter[0]);
+            const singleItemPrice = getItemPrice(priceList, sptHandbook.Items, ammoPack._props.StackSlots[0]._props.filters[0].Filter[0]);
             const price = singleItemPrice * itemMultipler;
 
             priceList[ammoPack._id] = price;
@@ -104,15 +97,12 @@ const processData = ((gameMode) => {
 const processTarkovDevPrices = ((gameMode, tarkovDevPrices) => {
     const filteredTarkovDevPrices = {};
 
-    for (const item of tarkovDevPrices.items)
-    {
-        if (item.changeLast48hPercent > 100)
-        {
+    for (const item of tarkovDevPrices.items) {
+        if (item.changeLast48hPercent > 100) {
             console.warn(`[${gameMode}] Item ${item.id} ${item.name} Has had recent ${item.changeLast48hPercent}% increase in price`);
         }
 
-        if (item.name.indexOf(" (0/") >= 0)
-        {
+        if (item.name.indexOf(" (0/") >= 0) {
             if (DEBUG) console.warn(`[${gameMode}] Skipping 0 durability item: ${item.id} ${item.name}`);
             continue;
         }
@@ -129,17 +119,16 @@ const processTarkovDevPrices = ((gameMode, tarkovDevPrices) => {
 
 const getItemPrice = ((priceList, handbookItems, itemTpl) => {
     const fleaPrice = priceList[itemTpl];
-    if (!fleaPrice)
-    {
+    if (!fleaPrice) {
         return handbookItems.find(x => x.Id === itemTpl).Price;
     }
     return fleaPrice;
 });
 
-const downloadFile = (async (url, filename) => {
-  const res = await fetch(url);
-  const fileStream = fs.createWriteStream(filename, { flags: 'w' });
-  await finished(Readable.fromWeb(res.body).pipe(fileStream));
+const downloadFile = (async(url, filename) => {
+    const res = await fetch(url);
+    const fileStream = fs.createWriteStream(filename, { flags: 'w' });
+    await finished(Readable.fromWeb(res.body).pipe(fileStream));
 });
 
 // Trigger main
