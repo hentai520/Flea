@@ -16,9 +16,9 @@ jobs:
       - name: Sync to Gitee
         uses: Yikun/hub-mirror-action@master
         with:
-          # 必选，Github 源仓库（用户/仓库名）
-          src: 'github/MiKueYu/SPT-LiveFleaPriceDB'
-          # 必选，Gitee 目标仓库（用户/仓库名）
+          # 正确的 Github 源仓库（用户/仓库名）
+          src: 'MiKueYu/SPT-LiveFleaPriceDB'
+          # Gitee 目标仓库（用户/仓库名）
           dst: 'gitee/${{ secrets.GITEE_USER }}/spt-live-flea-price-db'
           # 必选，Gitee私钥（用于 SSH 认证）
           dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
