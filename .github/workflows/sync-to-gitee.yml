@@ -9,27 +9,15 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Filter specific files
-        run: |
-          mkdir sync-files
-          cp ./prices-pve.json ./sync-files/
-          cp ./prices-regular.json ./sync-files/
-
-      - name: Push to Gitee (master branch)
-        env:
-          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
-        run: |
-          cd sync-files
-          git init
-          git config user.name "6666"
-          git config user.email "8032599+skwn123456@user.noreply.gitee.com"
-          git remote add gitee https://${{ secrets.GITEA_TOKEN }}@gitee.com/skwn123456/spt-live-flea-price-db.git
-          git add .
-          git commit -m "Sync prices-pve.json and prices-regular.json"
-          git branch -M master
-          git push -u gitee master --force
+      - name: Sync to Gitee
+        uses: wei/git-sync@v3
+        with:
+          source_repo: ${{ github.repository }}
+          source_branch: ${{ github.ref }}
+          destination_repo: https://${{ secrets.GITEE_TOKEN }}@gitee.com/MiKueYu/SPT-LiveFleaPriceDB.git
+          destination_branch: master  # 根据您的 Gitee 仓库主分支名称修改
+          sync_direction: forward
