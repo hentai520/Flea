@@ -28,7 +28,7 @@ jobs:
           git init
           git config user.name "6666"
           git config user.email "8032599+skwn123456@user.noreply.gitee.com"
-          git remote add gitee https://$GITEE_TOKEN@gitee.com/skwn123456/spt-live-flea-price-db.git
+          git remote add gitee https://${{ secrets.GITEA_TOKEN }}@gitee.com/skwn123456/spt-live-flea-price-db.git
           git add .
           git commit -m "Sync prices-pve.json and prices-regular.json"
           git branch -M master
