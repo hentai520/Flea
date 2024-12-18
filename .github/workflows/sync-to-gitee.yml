@@ -1,4 +1,4 @@
-name: Sync to Gitee
+name: Sync specific files to Gitee
 
 on:
   workflow_run:
@@ -13,11 +13,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Sync to Gitee
-        uses: wei/git-sync@v3
-        with:
-          source_repo: ${{ github.repository }}
-          source_branch: ${{ github.ref }}
-          destination_repo: https://${{ secrets.GITEE_TOKEN }}@gitee.com/MiKueYu/SPT-LiveFleaPriceDB.git
-          destination_branch: master  # 根据您的 Gitee 仓库主分支名称修改
-          sync_direction: forward
+      - name: Configure Git for Gitee
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Pull from Gitee (if exists)
+        run: git clone https://${{ secrets.GITEE_TOKEN }}@gitee.com/skwn123456/spt-live-flea-price-db.git
+
+      - name: Copy specific files
+        run: |
+          cp prices-pve.json prices-regular.json spt-live-flea-price-db/
+
+      - name: Commit and push specific files to Gitee
+        run: |
+          cd spt-live-flea-price-db
+          git add prices-pve.json prices-regular.json
+          git commit -m "Sync prices-pve.json and prices-regular.json"
+          git push origin main
