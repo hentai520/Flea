@@ -19,10 +19,16 @@ jobs:
           git add prices-regular.json prices-pve.json
           git commit -m "Update prices" || echo "No changes to commit"  # 如果没有更改，则跳过提交
 
+      - name: Set up Gitee credentials
+        run: |
+          # 使用 Gitee 用户名和密码进行身份验证
+          git config --global user.name "${{ secrets.GITEE_USERNAME }}"
+          git config --global user.password "${{ secrets.GITEE_PASSWORD }}"
+
       - name: Push to Gitee
         run: |
           # 添加 Gitee 远程仓库
-          git remote add gitee https://gitee.com/${{ secrets.GITEE_USERNAME }}/spt-live-flea-price-db.git
+          git remote add gitee https://$GITEE_USERNAME:${{ secrets.GITEE_PASSWORD }}@gitee.com/${{ secrets.GITEE_USERNAME }}/spt-live-flea-price-db.git
           # 强制推送到 Gitee 的 master 分支，覆盖已有文件
           git push gitee main:master --force
         env:
