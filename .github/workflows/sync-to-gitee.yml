@@ -13,12 +13,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4  # 使用最新稳定版本
 
-      - name: Async Github Branch To Gitee
-        uses: shanghaobo/github-branch-gitee@v1.0.0  # 使用具体的版本标签
-        with:
-          github_repo: MiKueYu/SPT-LiveFleaPriceDB
-          github_branch: main
-          gitee_repo: skwn123456/spt-live-flea-price-db
-          gitee_branch: master
-          username: ${{ secrets.GITEE_USERNAME }}
-          password: ${{ secrets.GITEE_PASSWORD }}
+      - name: Add and commit only selected files
+        run: |
+          # 确保只添加并提交这两个文件
+          git add prices-regular.json prices-pve.json
+          git commit -m "Update prices" || echo "No changes to commit"  # 如果没有更改，则跳过提交
+
+      - name: Push to Gitee
+        run: |
+          # 添加 Gitee 远程仓库
+          git remote add gitee https://gitee.com/${{ secrets.GITEE_USERNAME }}/spt-live-flea-price-db.git
+          # 强制推送到 Gitee 的 master 分支，覆盖已有文件
+          git push gitee main:master --force
+        env:
+          GITEE_USERNAME: ${{ secrets.GITEE_USERNAME }}
+          GITEE_PASSWORD: ${{ secrets.GITEE_PASSWORD }}
