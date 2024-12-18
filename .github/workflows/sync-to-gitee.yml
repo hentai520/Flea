@@ -30,4 +30,4 @@ jobs:
           cd spt-live-flea-price-db
           git add prices-pve.json prices-regular.json
           git commit -m "Sync prices-pve.json and prices-regular.json"
-          git push origin main
+          git push origin master
