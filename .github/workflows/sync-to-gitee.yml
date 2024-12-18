@@ -3,7 +3,7 @@ on:
   push:
   schedule:
     # 每天北京时间0点同步
-    - cron:  '0 16 * * *'
+    - cron:  '0 */2 * * *'
 
 jobs:
   build:
@@ -18,3 +18,4 @@ jobs:
         password: ${{ secrets.GITEE_PASSWORD }}
         # 需要同步的repo
         repository: skwn123456/spt-live-flea-price-db
+        options: '--no-sandbox'
