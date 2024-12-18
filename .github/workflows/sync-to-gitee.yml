@@ -13,9 +13,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4  # 使用最新稳定版本
 
-      - name: Add and commit only selected files
+      - name: Commit only selected files
         run: |
-          # 确保只添加并提交这两个文件
+          # 如果仓库是浅克隆，这里重新克隆以确保完整仓库
+          rm -rf .git  # 删除已有的 Git 配置
+          git init     # 重新初始化 Git 仓库
+          git remote add origin https://gitee.com/skwn123456/spt-live-flea-price-db.git
+          git fetch     # 拉取最新的 Gitee 仓库信息
+
+          # 将需要提交的文件添加到索引中
           git add prices-regular.json prices-pve.json
           git commit -m "Update prices" || echo "No changes to commit"  # 如果没有更改，则跳过提交
 
@@ -27,10 +33,8 @@ jobs:
 
       - name: Push to Gitee
         run: |
-          # 添加 Gitee 远程仓库
-          git remote add gitee https://$GITEE_USERNAME:${{ secrets.GITEE_PASSWORD }}@gitee.com/skwn123456/spt-live-flea-price-db.git
-          # 强制推送到 Gitee 的 master 分支，覆盖已有文件
-          git push gitee main:master --force
+          # 推送到 Gitee 的 master 分支，覆盖已有文件
+          git push https://$GITEE_USERNAME:${{ secrets.GITEE_PASSWORD }}@gitee.com/skwn123456/spt-live-flea-price-db.git main:master --force
         env:
           GITEE_USERNAME: ${{ secrets.GITEE_USERNAME }}
           GITEE_PASSWORD: ${{ secrets.GITEE_PASSWORD }}
