@@ -28,7 +28,7 @@ jobs:
       - name: Push to Gitee
         run: |
           # 添加 Gitee 远程仓库
-          git remote add gitee https://$GITEE_USERNAME:${{ secrets.GITEE_PASSWORD }}@gitee.com/${{ secrets.GITEE_USERNAME }}/spt-live-flea-price-db.git
+          git remote add gitee https://$GITEE_USERNAME:${{ secrets.GITEE_PASSWORD }}@gitee.com/skwn123456/spt-live-flea-price-db.git
           # 强制推送到 Gitee 的 master 分支，覆盖已有文件
           git push gitee main:master --force
         env:
