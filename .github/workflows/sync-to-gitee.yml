@@ -1,21 +1,24 @@
-name: Sync Repository Action
+name: Demo
+
 on:
-  push:
-  schedule:
-    # 每天北京时间0点同步
-    - cron:  '0 */2 * * *'
+  workflow_run:
+    workflows: ["LiveFleaPrice Fetcher"]
+    types:
+      - completed
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Sync to Gitee
-      uses: chenxudong2020/sync-gitee-action@v1
-      with:
-        # gitee账号
-        username: ${{ secrets.GITEE_USERNAME }}
-        # gitee密码
-        password: ${{ secrets.GITEE_PASSWORD }}
-        # 需要同步的repo
-        repository: skwn123456/spt-live-flea-price-db
-        options: '--no-sandbox'
+      - name: Checkout repository
+        uses: actions/checkout@v4  # 使用最新稳定版本
+
+      - name: Async Github Branch To Gitee
+        uses: shanghaobo/github-branch-gitee@master
+        with:
+          github_repo: MiKueYu/SPT-LiveFleaPriceDB
+          github_branch: main
+          gitee_repo: skwn123456/spt-live-flea-price-db
+          gitee_branch: master
+          username: ${{ secrets.GITEE_USERNAME }}
+          password: ${{ secrets.GITEE_PASSWORD }}
