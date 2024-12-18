@@ -1,33 +1,20 @@
-name: Sync to Gitee
-
+name: Sync Repository Action
 on:
-  workflow_run:
-    workflows: ["LiveFleaPrice Fetcher"]
-    types:
-      - completed
+  push:
+  schedule:
+    # 每天北京时间0点同步
+    - cron:  '0 16 * * *'
 
 jobs:
-  sync:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Sync to Gitee
-        uses: Yikun/hub-mirror-action@master
-        with:
-          # 正确的 Github 源仓库（用户/仓库名）
-          src: 'MiKueYu/SPT-LiveFleaPriceDB'
-          # Gitee 目标仓库（用户/仓库名）
-          dst: 'gitee/${{ secrets.GITEE_USER }}/spt-live-flea-price-db'
-          # 必选，Gitee私钥（用于 SSH 认证）
-          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
-          # 必选，Gitee token（用于 API 认证）
-          dst_token: ${{ secrets.GITEE_TOKEN }}
-          # 如果是组织，指定组织名称，默认为用户
-          account_type: user
-          # 直接使用当前 GitHub 仓库的仓库名
-          static_list: ${{ github.event.repository.name }}
-          # 黑、白名单机制可选配置
-          # black_list: 'repo_name,repo_name2'
-          # white_list: 'repo_name,repo_name2'
+    - name: Sync to Gitee
+      uses: chenxudong2020/sync-gitee-action@v1
+      with:
+        # gitee账号
+        username: ${{ secrets.GITEE_USERNAME }}
+        # gitee密码
+        password: ${{ secrets.GITEE_PASSWORD }}
+        # 需要同步的repo
+        repository: skwn123456/spt-live-flea-price-db
