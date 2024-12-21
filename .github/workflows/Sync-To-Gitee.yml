@@ -1,6 +1,10 @@
 name: Sync To Gitee
 
-on: [ push, delete, create ]
+on:
+    workflow_run:
+      workflows: ["LiveFleaPrice Fetcher"]
+      types:
+        - completed
 
 jobs:
   build:
