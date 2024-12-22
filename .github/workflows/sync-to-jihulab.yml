@@ -1,4 +1,4 @@
-name: Sync to JiHuLab
+name: Sync To JiHuLab
 
 on:
     workflow_run:
@@ -7,19 +7,16 @@ on:
         - completed
 
 jobs:
-  sync:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-    # 1. 检出 GitHub 仓库代码
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    # 2. 推送代码到 JiHuLab
-    - name: Push to JiHuLab
-      env:
-        JIHULAB_URL: ${{ secrets.JIHULAB_URL }}
-        JIHULAB_TOKEN: ${{ secrets.JIHULAB_TOKEN }}
-      run: |
-        git remote add jihulab https://${{ secrets.JIHULAB_TOKEN }}@${{ secrets.JIHULAB_URL }}
-        git push jihulab main
+      - name: Sync to JiHuLab
+        uses: wearerequired/git-mirror-action@master
+        env:
+          # 注意在 Settings->Secrets 配置 JIHU_RSA_PRIVATE_KEY
+          SSH_PRIVATE_KEY: ${{ secrets.JIHU_RSA_PRIVATE_KEY }}
+        with:
+          # 注意替换为你的 GitHub 源仓库地址
+          source-repo: git@github.com:MiKueYu/SPT-LiveFleaPriceDB.git
+          # 注意替换为你的 JiHuLab 目标仓库地址
+          destination-repo: git@jihulab.com:Miku_Sa/SPT-LiveFleaPriceDB.git
