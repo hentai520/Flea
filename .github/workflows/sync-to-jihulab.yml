@@ -1,0 +1,25 @@
+name: Sync to JiHuLab
+
+on:
+    workflow_run:
+      workflows: ["LiveFleaPrice Fetcher"]
+      types:
+        - completed
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. 检出 GitHub 仓库代码
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # 2. 推送代码到 JiHuLab
+    - name: Push to JiHuLab
+      env:
+        JIHULAB_URL: ${{ secrets.JIHULAB_URL }}
+        JIHULAB_TOKEN: ${{ secrets.JIHULAB_TOKEN }}
+      run: |
+        git remote add jihulab https://${{ secrets.JIHULAB_TOKEN }}@${{ secrets.JIHULAB_URL }}
+        git push jihulab main
